@@ -25,11 +25,25 @@ enum FanMode: String, CaseIterable, Identifiable {
 final class Monitor: ObservableObject {
     static let historyCapacity = 90   // 3 minutes at one sample every 2 s
 
+    /// Everything the panel shows. Sampled every tick, but only copied into the published
+    /// properties while the panel is on screen: publishing makes SwiftUI redraw, which costs far
+    /// more than reading the sensors does.
+    private struct Snapshot {
+        var cores: [CoreReading] = []
+        var gpu: Double?
+        var ssd: Double?
+        var fans: [Fan] = []
+        var history: [Double] = []
+        var hottest: Double? { cores.compactMap(\.temperature).max() }
+    }
+    private var live = Snapshot()
+
     @Published private(set) var cores: [CoreReading] = []
     @Published private(set) var gpu: Double?
     @Published private(set) var ssd: Double?
     @Published private(set) var fans: [Fan] = []
     @Published private(set) var history: [Double] = []
+    @Published private(set) var menuTitle = "—"
     @Published private(set) var helperInstalled = Monitor.helperIsInstalled
     @Published private(set) var installError: String?
 
@@ -61,38 +75,62 @@ final class Monitor: ObservableObject {
         return t.isEmpty ? nil : t.reduce(0, +) / Double(t.count)
     }
 
-    var menuTitle: String { hottest.map { "\(Int($0.rounded()))°" } ?? "—" }
-
     init() {
         _ = SMC.open()
         gpuKeys = SMC.floatKeys(prefix: "Tg")
-        tick()
+        refresh()
         let timer = Timer(timeInterval: 2, repeats: true) { [weak self] _ in self?.tick() }
+        timer.tolerance = 0.5
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
     }
 
+    /// Samples and publishes right away; the panel calls this when it opens.
+    func refresh() {
+        sample()
+        publish()
+    }
+
+    private var panelVisible: Bool {
+        NSApp?.windows.contains { $0.isVisible && !$0.className.contains("StatusBar") } ?? false
+    }
+
     private func tick() {
+        sample()
+        if panelVisible { publish() }
+    }
+
+    private func sample() {
         let load = usage.sample()
-        cores = sensors.map {
+        live.cores = sensors.map {
             CoreReading(sensor: $0, temperature: SensorMap.temperature($0), usage: load.indices.contains($0.cpu) ? load[$0.cpu] : 0)
         }
-        gpu = SensorMap.average(gpuKeys)
-        ssd = SensorMap.ssdKeys.compactMap(SMC.float).filter(SensorMap.isPlausible).max()
-        fans = Fans.all()
-        if let hot = hottest { history = Array((history + [hot]).suffix(Self.historyCapacity)) }
+        live.gpu = SensorMap.average(gpuKeys)
+        live.ssd = SensorMap.ssdKeys.compactMap(SMC.float).filter(SensorMap.isPlausible).max()
+        live.fans = Fans.all()
+        if let hot = live.hottest { live.history = Array((live.history + [hot]).suffix(Self.historyCapacity)) }
+        let title = live.hottest.map { "\(Int($0.rounded()))°" } ?? "—"
+        if title != menuTitle { menuTitle = title }
         applyFanMode()   // doubles as the helper keep-alive
+    }
+
+    private func publish() {
+        cores = live.cores
+        gpu = live.gpu
+        ssd = live.ssd
+        fans = live.fans
+        history = live.history
     }
 
     // MARK: fan control (through the root helper)
 
     private var targetRPM: Double? {
-        guard let fan = fans.first else { return nil }
+        guard let fan = live.fans.first else { return nil }
         switch fanMode {
         case .auto: return nil
         case .manual: return manualRPM
         case .curve:
-            guard let hot = hottest, curveEnd > curveStart else { return nil }
+            guard let hot = live.hottest, curveEnd > curveStart else { return nil }
             let f = min(max((hot - curveStart) / (curveEnd - curveStart), 0), 1)
             return fan.min + f * (fan.max - fan.min)
         }
@@ -102,7 +140,7 @@ final class Monitor: ObservableObject {
         guard helperInstalled else { return }
         if let rpm = targetRPM {
             helper()?.setFan(rpm: rpm) { _ in }
-        } else if fans.contains(where: \.manual) {
+        } else if live.fans.contains(where: \.manual) {
             helper()?.setAuto { _ in }
         }
     }

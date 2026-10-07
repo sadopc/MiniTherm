@@ -40,6 +40,7 @@ struct PanelView: View {
         }
         .padding(14)
         .frame(width: 340)
+        .onAppear { monitor.refresh() }
     }
 }
 

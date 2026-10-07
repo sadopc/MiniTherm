@@ -18,6 +18,19 @@ A small menu bar app for the **Mac mini with M6** (base model, `Mac18,5`): per-c
 
 It only supports the base M6 Mac mini. On any other Mac it says so and shows nothing.
 
+## Resource usage
+
+Measured on a Mac mini M6 (macOS 27.0.1) after the app had been running for 8 hours, panel closed, fan mode Auto:
+
+| | |
+|---|---|
+| CPU | about 1.2% of one core (0.74 s of CPU time per minute) |
+| Memory | 34 MB, stable (peak 35 MB) |
+| App size | 544 KB |
+| Fan helper | no CPU while idle, 5.8 MB memory |
+
+The app reads about 40 sensors every 2 seconds, whether or not the panel is open. Usage with the panel open, or in Manual/Curve mode (where the helper receives a command every 2 seconds), has not been measured.
+
 ## Build and run
 
 Requires Xcode (or the Swift toolchain) on macOS 14 or later.

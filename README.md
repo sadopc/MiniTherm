@@ -1,3 +1,5 @@
+<img src="docs/icon.png" width="96" alt="">
+
 # MiniTherm
 
 A small menu bar app for the **Mac mini with M6** (base model, `Mac18,5`): per-core CPU temperatures, GPU and SSD temperature, and fan control. Free and open source.
@@ -90,6 +92,10 @@ Fan control on this machine is `F0md = 1` followed by `F0Tg = <rpm>` (both need 
 ## Disclaimer
 
 This uses undocumented interfaces that Apple can change in any macOS update. Running a fan too slowly under load makes the machine throttle or shut down to protect itself. Use at your own risk.
+
+## Icon
+
+The icon is drawn in code: `swift scripts/make-icon.swift icon.png` writes the 1024×1024 source for `Resources/AppIcon.icns`.
 
 ## License
 

@@ -11,7 +11,7 @@ rm -rf build
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$bin/MiniTherm" "$app/Contents/MacOS/MiniTherm"
 # the fan-control daemon ships inside the app; the app installs it on request
-cp "$bin/minitherm-helper" Resources/local.minitherm.helper.plist "$app/Contents/Resources/"
+cp "$bin/minitherm-helper" Resources/local.minitherm.helper.plist Resources/AppIcon.icns "$app/Contents/Resources/"
 cp -R Resources/*.lproj "$app/Contents/Resources/"
 
 cat > "$app/Contents/Info.plist" <<'EOF'
@@ -24,6 +24,7 @@ cat > "$app/Contents/Info.plist" <<'EOF'
     <key>CFBundleDevelopmentRegion</key><string>en</string>
     <key>CFBundleLocalizations</key><array><string>en</string><string>tr</string></array>
     <key>CFBundleExecutable</key><string>MiniTherm</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
     <key>CFBundleVersion</key><string>1</string>

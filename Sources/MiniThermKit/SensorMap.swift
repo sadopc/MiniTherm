@@ -51,8 +51,10 @@ public enum SensorMap {
         ]
     }()
 
-    /// NAND temperature sensors.
-    public static let ssdKeys = ["TH0a", "TH0b", "TH0x"]
+    /// NAND temperature. Under sustained disk writes `TN00` is the key that climbs (+10 °C in 40 s);
+    /// the `TH0*` keys that earlier Apple Silicon used for the SSD barely move on this machine.
+    /// `TN01` reads 0 on the base model.
+    public static let ssdKeys = ["TN00", "TN01"]
 
     /// Per-core map for this machine, or nil when the model has not been mapped.
     public static var cores: [CoreSensor]? { model == "Mac18,5" ? mac18_5 : nil }

@@ -11,7 +11,7 @@ final class Service: NSObject, NSXPCListenerDelegate, HelperProtocol {
     private let queue = DispatchQueue(label: "local.minitherm.helper.fan")
     private var manual = false
     private var lastCommand = Date.distantPast
-    private let hotKeys = SMC.floatKeys(prefix: "Tp") + SMC.floatKeys(prefix: "Te")
+    private let hotKeys = ["Tp", "Te", "Tg"].flatMap(SMC.floatKeys)
 
     func setFan(rpm: Double, reply: @escaping (Bool) -> Void) {
         reply(queue.sync {

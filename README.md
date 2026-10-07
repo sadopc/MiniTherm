@@ -14,7 +14,7 @@ A small menu bar app for the **Mac mini with M6** (base model, `Mac18,5`): per-c
 - Fan speed, with three modes:
   - **Auto** – macOS decides (default)
   - **Manual** – fixed RPM between the fan's minimum and maximum (1000–4900)
-  - **Curve** – ramps linearly from minimum to maximum between two temperatures of the hottest core
+  - **Curve** – ramps linearly from minimum to maximum between two temperatures, following the hottest CPU core or the GPU, whichever is hotter
 - Launch at login
 - English and Turkish interface, following the system language
 
@@ -22,7 +22,7 @@ It only supports the base M6 Mac mini. On any other Mac it says so and shows not
 
 ## Install
 
-1. Download `MiniTherm-1.0.zip` from the [latest release](https://github.com/sadopc/MiniTherm/releases/latest) and unzip it.
+1. Download the zip from the [latest release](https://github.com/sadopc/MiniTherm/releases/latest) and unzip it.
 2. Move `MiniTherm.app` to `/Applications`.
 3. Open it. A thermometer and a temperature appear in the menu bar.
 
@@ -76,7 +76,7 @@ The daemon returns the fan to automatic control when
 
 - the app quits or crashes,
 - it has not heard from the app for 20 seconds, or
-- any CPU sensor reaches 100 °C.
+- any CPU or GPU sensor reaches 100 °C.
 
 It accepts connections only from root and the user logged in at the console, and clamps every request to the fan's own limits.
 
@@ -108,8 +108,18 @@ macOS has no CPU affinity on Apple Silicon, so a thread cannot be pinned to a co
 Known limits:
 
 - **Three efficiency cores have no sensor of their own.** In repeated measurements no key responded specifically to cpu0, cpu4 or cpu5. The app shows the average of the three efficiency sensors for them, marked with `≈`.
-- The GPU value is the average of the 18 `Tg*` keys. It was only observed at idle.
-- The SSD value uses `TH0a`/`TH0b`/`TH0x`, following the naming on earlier Apple Silicon; it was not verified by loading the disk.
+
+### GPU and SSD
+
+Both were checked by loading one component at a time while logging every temperature key, with CPU load staying at about 5%.
+
+| Test | Keys that responded | Everything else |
+|---|---|---|
+| Metal compute load, 35 s | all 18 `Tg*` keys rose 21–25 °C (30 → 53–58 °C) | CPU core sensors rose 13–18 °C from heat spreading across the chip |
+| Disk writes, 64 GB in 40 s | `TN00` rose 10 °C (33 → 45 °C) | all other sensors rose 2–3.5 °C |
+
+- **GPU** is the average of the 18 `Tg*` keys. They read almost identically at idle and spread by about 5 °C under load.
+- **SSD** is `TN00`. The `TH0a`/`TH0b`/`TH0x` keys, which tools for earlier Apple Silicon use for the SSD, rose only 2–3.5 °C in the same test, so they are not used here. `TN01` reads 0 on the base model.
 
 Fan control on this machine is `F0md = 1` followed by `F0Tg = <rpm>` (both need root); `F0md = 0` returns to automatic. No `Ftst` unlock is needed.
 

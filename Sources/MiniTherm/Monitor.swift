@@ -53,7 +53,7 @@ final class Monitor: ObservableObject {
     @Published var manualRPM = UserDefaults.standard.object(forKey: "manualRPM") as? Double ?? 2000 {
         didSet { UserDefaults.standard.set(manualRPM, forKey: "manualRPM"); applyFanMode() }
     }
-    /// Curve mode: fan sits at minimum below `curveStart` and reaches maximum at `curveEnd` (°C, hottest core).
+    /// Curve mode: fan sits at minimum below `curveStart` and reaches maximum at `curveEnd` (°C, hotter of the hottest core and the GPU).
     @Published var curveStart = UserDefaults.standard.object(forKey: "curveStart") as? Double ?? 50 {
         didSet { UserDefaults.standard.set(curveStart, forKey: "curveStart") }
     }
@@ -130,7 +130,8 @@ final class Monitor: ObservableObject {
         case .auto: return nil
         case .manual: return manualRPM
         case .curve:
-            guard let hot = live.hottest, curveEnd > curveStart else { return nil }
+            // GPU work heats the GPU sensors well above the CPU cores, so follow whichever is hotter
+            guard let hot = [live.hottest, live.gpu].compactMap({ $0 }).max(), curveEnd > curveStart else { return nil }
             let f = min(max((hot - curveStart) / (curveEnd - curveStart), 0), 1)
             return fan.min + f * (fan.max - fan.min)
         }

@@ -15,6 +15,6 @@
 "Launch at login" = "Oturum açılışında başlat";
 "Quit" = "Çıkış";
 "Helper is missing from the app bundle." = "Yardımcı, uygulama paketinde bulunamadı.";
-"CoreTemp only supports the Mac mini with M6 (Mac18,5).\nThis Mac is %@." = "CoreTemp yalnızca M6'lı Mac mini'yi (Mac18,5) destekler.\nBu Mac: %@.";
+"MiniTherm only supports the Mac mini with M6 (Mac18,5).\nThis Mac is %@." = "MiniTherm yalnızca M6'lı Mac mini'yi (Mac18,5) destekler.\nBu Mac: %@.";
 "cpu%lld · %@ load · no dedicated sensor, efficiency-cluster average" = "cpu%lld · %@ yük · kendi sensörü yok, verimlilik kümesi ortalaması";
 "cpu%lld · %@ load · %@" = "cpu%lld · %@ yük · %@";

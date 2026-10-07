@@ -1,8 +1,8 @@
-# CoreTemp
+# MiniTherm
 
 A small menu bar app for the **Mac mini with M6** (base model, `Mac18,5`): per-core CPU temperatures, GPU and SSD temperature, and fan control. Free and open source.
 
-<img src="docs/screenshot.png" width="340" alt="CoreTemp panel">
+<img src="docs/screenshot.png" width="340" alt="MiniTherm panel">
 
 ## What it does
 
@@ -37,14 +37,14 @@ Requires Xcode (or the Swift toolchain) on macOS 14 or later.
 
 ```sh
 ./build.sh
-open build/CoreTemp.app
+open build/MiniTherm.app
 ```
 
-Copy `build/CoreTemp.app` to `/Applications` if you want to keep it (do this before turning on *Launch at login*).
+Copy `build/MiniTherm.app` to `/Applications` if you want to keep it (do this before turning on *Launch at login*).
 
 ## Fan control and the root helper
 
-Reading sensors needs no special rights. Writing fan speed does: the SMC only accepts writes from root. The first time you click **Enable…** in the fan section, the app asks for an administrator password and installs a small daemon (`local.coretemp.helper`) that does nothing except set the fan speed or hand it back to macOS.
+Reading sensors needs no special rights. Writing fan speed does: the SMC only accepts writes from root. The first time you click **Enable…** in the fan section, the app asks for an administrator password and installs a small daemon (`local.minitherm.helper`) that does nothing except set the fan speed or hand it back to macOS.
 
 The daemon returns the fan to automatic control when
 
@@ -62,7 +62,7 @@ sudo ./uninstall-helper.sh
 
 ## How the sensors were found
 
-Apple does not document the SMC keys, and they change with every chip generation. The map in [`SensorMap.swift`](Sources/CoreTempKit/SensorMap.swift) was found by measurement on a Mac mini M6 running macOS 27.0.1.
+Apple does not document the SMC keys, and they change with every chip generation. The map in [`SensorMap.swift`](Sources/MiniThermKit/SensorMap.swift) was found by measurement on a Mac mini M6 running macOS 27.0.1.
 
 macOS has no CPU affinity on Apple Silicon, so a thread cannot be pinned to a core. Instead, a set of threads each check which core they are currently on and only run a heavy workload while they are on the target core, sleeping otherwise. Heating one core at a time this way and watching which key rises gives:
 

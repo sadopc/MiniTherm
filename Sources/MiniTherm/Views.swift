@@ -1,4 +1,4 @@
-import CoreTempKit
+import MiniThermKit
 import ServiceManagement
 import SwiftUI
 
@@ -32,7 +32,7 @@ struct PanelView: View {
                 }
                 Card { FanSection() }
             } else {
-                Text("CoreTemp only supports the Mac mini with M6 (Mac18,5).\nThis Mac is \(SensorMap.model).")
+                Text("MiniTherm only supports the Mac mini with M6 (Mac18,5).\nThis Mac is \(SensorMap.model).")
                     .font(.callout).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

@@ -1,5 +1,5 @@
 import AppKit
-import CoreTempKit
+import MiniThermKit
 import Foundation
 import SwiftUI
 
@@ -170,7 +170,7 @@ final class Monitor: ObservableObject {
 
     /// Copies the bundled daemon into /Library and starts it. macOS asks for an administrator password once.
     func installHelper() {
-        guard let binary = Bundle.main.path(forResource: "coretemp-helper", ofType: nil),
+        guard let binary = Bundle.main.path(forResource: "minitherm-helper", ofType: nil),
               let plist = Bundle.main.path(forResource: helperMachService, ofType: "plist") else {
             installError = String(localized: "Helper is missing from the app bundle.")
             return

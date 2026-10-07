@@ -36,7 +36,7 @@ public enum Fans {
     public static func setAuto(_ i: Int) -> Bool { SMC.write(modeKey(i), uint8: 0) }
 }
 
-public let helperMachService = "local.coretemp.helper"
+public let helperMachService = "local.minitherm.helper"
 
 @objc public protocol HelperProtocol {
     /// Puts every fan in manual mode at `rpm` (clamped). Must be repeated periodically as a keep-alive.

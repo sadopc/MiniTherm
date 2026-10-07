@@ -1,4 +1,4 @@
-import CoreTempKit
+import MiniThermKit
 import Foundation
 
 // Root LaunchDaemon: the only part that writes to the SMC. It accepts two commands (fan RPM, auto)
@@ -8,7 +8,7 @@ let keepAliveTimeout: TimeInterval = 20
 let failsafeTemperature = 100.0
 
 final class Service: NSObject, NSXPCListenerDelegate, HelperProtocol {
-    private let queue = DispatchQueue(label: "local.coretemp.helper.fan")
+    private let queue = DispatchQueue(label: "local.minitherm.helper.fan")
     private var manual = false
     private var lastCommand = Date.distantPast
     private let hotKeys = SMC.floatKeys(prefix: "Tp") + SMC.floatKeys(prefix: "Te")
@@ -60,7 +60,7 @@ final class Service: NSObject, NSXPCListenerDelegate, HelperProtocol {
 }
 
 guard SMC.open() else {
-    FileHandle.standardError.write(Data("coretemp-helper: cannot open AppleSMC\n".utf8))
+    FileHandle.standardError.write(Data("minitherm-helper: cannot open AppleSMC\n".utf8))
     exit(1)
 }
 

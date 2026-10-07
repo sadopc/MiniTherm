@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct CoreTempApp: App {
+struct MiniThermApp: App {
     @StateObject private var monitor = Monitor()
 
     var body: some Scene {

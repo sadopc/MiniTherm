@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "CoreTemp",
+    name: "MiniTherm",
     platforms: [.macOS(.v14)],
     targets: [
         .target(name: "CSMC", linkerSettings: [.linkedFramework("IOKit")]),
-        .target(name: "CoreTempKit", dependencies: ["CSMC"]),
-        .executableTarget(name: "CoreTemp", dependencies: ["CoreTempKit"]),
-        .executableTarget(name: "coretemp-helper", dependencies: ["CoreTempKit"], path: "Sources/Helper"),
+        .target(name: "MiniThermKit", dependencies: ["CSMC"]),
+        .executableTarget(name: "MiniTherm", dependencies: ["MiniThermKit"]),
+        .executableTarget(name: "minitherm-helper", dependencies: ["MiniThermKit"], path: "Sources/Helper"),
     ]
 )

@@ -20,6 +20,30 @@ A small menu bar app for the **Mac mini with M6** (base model, `Mac18,5`): per-c
 
 It only supports the base M6 Mac mini. On any other Mac it says so and shows nothing.
 
+## Install
+
+1. Download `MiniTherm-1.0.zip` from the [latest release](https://github.com/sadopc/MiniTherm/releases/latest) and unzip it.
+2. Move `MiniTherm.app` to `/Applications`.
+3. Open it. A thermometer and a temperature appear in the menu bar.
+
+### "Apple could not verify MiniTherm…"
+
+MiniTherm is not notarized: that requires a paid Apple Developer account, and this is a free hobby project. The build is only ad-hoc signed, so macOS blocks it the first time you open a downloaded copy. Use either of these once:
+
+**System Settings**
+
+1. Try to open MiniTherm and dismiss the warning with **Done** (not *Move to Trash*).
+2. Open **System Settings → Privacy & Security** and scroll down to **Security**.
+3. Next to "MiniTherm was blocked…", click **Open Anyway** and confirm with your password.
+
+**Terminal**
+
+```sh
+xattr -dr com.apple.quarantine /Applications/MiniTherm.app
+```
+
+This removes the "downloaded from the internet" flag that triggers the check. If you would rather not trust a prebuilt binary, build it yourself (below) – a locally built app is never blocked.
+
 ## Resource usage
 
 Measured on a Mac mini M6 (macOS 27.0.1), panel closed, fan mode Auto:
